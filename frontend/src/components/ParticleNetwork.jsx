@@ -102,8 +102,8 @@ const ParticleNetwork = () => {
       canvas.width = width;
       canvas.height = height;
 
-      // Recalculate particle count
-      const newCount = Math.floor((width * height) / 12000);
+      // Recalculate particle count - increased density
+      const newCount = Math.floor((width * height) / 6000);
       if (newCount > particlesRef.current.length) {
         for (let i = particlesRef.current.length; i < newCount; i++) {
           particlesRef.current.push(new Particle());
