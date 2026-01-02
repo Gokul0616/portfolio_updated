@@ -56,8 +56,8 @@ const ParticleNetwork = () => {
       }
     }
 
-    // Initialize particles
-    const particleCount = Math.floor((width * height) / 12000);
+    // Initialize particles - increased density
+    const particleCount = Math.floor((width * height) / 6000);
     for (let i = 0; i < particleCount; i++) {
       particlesRef.current.push(new Particle());
     }
