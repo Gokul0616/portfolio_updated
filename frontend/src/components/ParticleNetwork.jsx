@@ -34,18 +34,6 @@ const ParticleNetwork = () => {
         // Bounce off edges
         if (this.x < 0 || this.x > width) this.vx *= -1;
         if (this.y < 0 || this.y > height) this.vy *= -1;
-
-        // Mouse interaction
-        const dx = mouseRef.current.x - this.x;
-        const dy = mouseRef.current.y - this.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        if (distance < 150) {
-          const angle = Math.atan2(dy, dx);
-          const force = (150 - distance) / 150;
-          this.x -= Math.cos(angle) * force * 2;
-          this.y -= Math.sin(angle) * force * 2;
-        }
       }
 
       draw() {
@@ -72,7 +60,7 @@ const ParticleNetwork = () => {
         particle.draw();
       });
 
-      // Draw connections
+      // Draw connections between particles
       for (let i = 0; i < particlesRef.current.length; i++) {
         for (let j = i + 1; j < particlesRef.current.length; j++) {
           const dx = particlesRef.current[i].x - particlesRef.current[j].x;
@@ -89,6 +77,22 @@ const ParticleNetwork = () => {
           }
         }
       }
+
+      // Draw lines from cursor to nearby particles
+      particlesRef.current.forEach((particle) => {
+        const dx = mouseRef.current.x - particle.x;
+        const dy = mouseRef.current.y - particle.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < 150) {
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(0, 217, 255, ${1 - distance / 150})`;
+          ctx.lineWidth = 1.5;
+          ctx.moveTo(particle.x, particle.y);
+          ctx.lineTo(mouseRef.current.x, mouseRef.current.y);
+          ctx.stroke();
+        }
+      });
 
       animationRef.current = requestAnimationFrame(animate);
     };
