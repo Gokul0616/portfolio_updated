@@ -1,6 +1,6 @@
 import React from 'react';
 import { personalInfo } from '../mock';
-import { Github, Linkedin, Mail, ArrowDown } from 'lucide-react';
+import { Github, Linkedin, Mail, ArrowDown, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 
 const Hero = () => {
@@ -11,8 +11,26 @@ const Hero = () => {
     }
   };
 
+  const activateBlackHole = () => {
+    if (window.activateBlackHole) {
+      window.activateBlackHole();
+    }
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center px-4 py-16 select-none">
+      {/* Black Hole Trigger Button */}
+      <button
+        onClick={activateBlackHole}
+        className="absolute top-20 right-8 z-20 bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110 group"
+        title="Activate Black Hole"
+      >
+        <Trash2 size={24} className="group-hover:rotate-12 transition-transform" />
+        <span className="absolute -bottom-8 right-0 text-xs text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+          Black Hole
+        </span>
+      </button>
+      
       <div className="relative z-10 max-w-5xl mx-auto text-center">
         <div className="mb-6 inline-block">
           <h2 className="text-cyan-400 text-sm font-medium mb-1 tracking-wide">Hello, I'm</h2>
