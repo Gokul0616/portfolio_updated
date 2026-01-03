@@ -107,27 +107,57 @@ user_problem_statement: "Fix particle generation in hero section - particles sho
 frontend:
   - task: "Particle Click Interaction in Hero Section"
     implemented: true
-    working: "pending_test"
+    working: true
     file: "/app/frontend/src/components/ParticleNetwork.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "pending_test"
         agent: "main"
         comment: "Added click event handler to create particles only when clicking within hero section boundaries. Particles are prevented from being added outside hero section. Added 3-5 particles per click with randomized positioning around click point."
+      - working: true
+        agent: "testing"
+        comment: "TESTED: Particle creation works correctly - particles are created when clicking inside hero section and NOT created when clicking outside. However, performance degrades as more particles are added (movement becomes slower). User requests: 1) Constant particle movement speed regardless of particle count, 2) Black hole effect feature - when dustbin icon is clicked, create black hole at center of hero section that absorbs nearby particles with realistic gravitational effect and pauses scroll during animation."
   
   - task: "Prevent Text Selection in Hero Section"
     implemented: true
-    working: "pending_test"
+    working: true
     file: "/app/frontend/src/components/Hero.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "pending_test"
         agent: "main"
         comment: "Added 'select-none' CSS class to hero section to prevent text selection when clicking/interacting with particles. This prevents the text highlighting issue shown in the screenshots."
+      - working: true
+        agent: "testing"
+        comment: "TESTED: Text selection prevention works correctly. Triple-clicking and drag selection on hero section text does not select text as expected."
+  
+  - task: "Particle Performance Optimization"
+    implemented: false
+    working: "NA"
+    file: "/app/frontend/src/components/ParticleNetwork.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "NEW REQUIREMENT: Particle movement speed decreases as more particles are added. Need to optimize animation loop to maintain constant movement speed regardless of particle count. Consider using requestAnimationFrame optimization or particle pooling."
+  
+  - task: "Black Hole Particle Absorption Feature"
+    implemented: false
+    working: "NA"
+    file: "/app/frontend/src/components/ParticleNetwork.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "NEW REQUIREMENT: Add dustbin/black hole feature. When dustbin icon is clicked, create realistic black hole effect at center of hero section that: 1) Pauses page scroll during animation, 2) Creates gravitational pull effect on nearby particles, 3) Absorbs particles with realistic physics, 4) Has visual black hole effect with event horizon, 5) Closes automatically after absorbing particles."
 
 metadata:
   created_by: "main_agent"
