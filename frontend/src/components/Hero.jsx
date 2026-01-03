@@ -12,7 +12,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-4 py-16">
+    <section className="relative min-h-screen flex items-center justify-center px-4 py-16 select-none">
       <div className="relative z-10 max-w-5xl mx-auto text-center">
         <div className="mb-6 inline-block">
           <h2 className="text-cyan-400 text-sm font-medium mb-1 tracking-wide">Hello, I'm</h2>
