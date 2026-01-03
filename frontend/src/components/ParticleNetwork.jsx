@@ -102,23 +102,31 @@ const ParticleNetwork = () => {
       // Update and draw particles
       const particlesToRemove = [];
       particlesRef.current.forEach((particle, index) => {
-        // Black hole gravitational effect
+        // Black hole gravitational effect - affects ALL particles on screen
         if (blackHoleActive) {
           const bh = blackHoleRef.current;
           const dx = bh.x - particle.x;
           const dy = bh.y - particle.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           
-          // Gravitational force (stronger as it gets closer)
+          // Strong gravitational force that affects entire screen
           if (distance > 5) {
-            const force = (bh.radius * 0.5) / (distance * distance) * 1000;
+            const force = (bh.maxRadius * 2) / (distance * distance) * 2000;
             const angle = Math.atan2(dy, dx);
             particle.vx += Math.cos(angle) * force;
             particle.vy += Math.sin(angle) * force;
+            
+            // Increase velocity cap during black hole
+            const maxSpeed = 15;
+            const speed = Math.sqrt(particle.vx * particle.vx + particle.vy * particle.vy);
+            if (speed > maxSpeed) {
+              particle.vx = (particle.vx / speed) * maxSpeed;
+              particle.vy = (particle.vy / speed) * maxSpeed;
+            }
           }
           
           // Remove particle if it reaches the black hole center
-          if (distance < 20) {
+          if (distance < 30) {
             particlesToRemove.push(index);
             return;
           }
@@ -176,13 +184,20 @@ const ParticleNetwork = () => {
         });
       }
 
-      // Auto-close black hole when few particles remain or after timeout
-      if (blackHoleActive && (particlesRef.current.length < 10 || blackHoleRef.current.radius >= blackHoleRef.current.maxRadius + 50)) {
+      // Auto-close black hole after 5 seconds and leave only 1 particle
+      if (blackHoleActive && (particlesRef.current.length <= 1 || blackHoleRef.current.radius >= blackHoleRef.current.maxRadius + 50)) {
         setTimeout(() => {
           setBlackHoleActive(false);
+          // Leave only 1 particle
+          if (particlesRef.current.length > 1) {
+            particlesRef.current = [particlesRef.current[0]];
+          } else if (particlesRef.current.length === 0) {
+            // Create 1 particle if all were absorbed
+            particlesRef.current = [new Particle()];
+          }
           // Re-enable scroll
           document.body.style.overflow = 'auto';
-        }, 1000);
+        }, 500);
       }
 
       animationRef.current = requestAnimationFrame(animate);
@@ -284,6 +299,47 @@ const ParticleNetwork = () => {
         setBlackHoleActive(true);
         // Disable scroll during black hole
         document.body.style.overflow = 'hidden';
+        
+        // Auto-close after exactly 5 seconds
+        setTimeout(() => {
+          setBlackHoleActive(false);
+          // Leave only 1 particle
+          if (particlesRef.current.length > 1) {
+            particlesRef.current = [particlesRef.current[0]];
+          } else if (particlesRef.current.length === 0) {
+            // Create 1 particle if all were absorbed
+            const canvas = canvasRef.current;
+            if (canvas) {
+              class Particle {
+                constructor() {
+                  this.x = Math.random() * canvas.width;
+                  this.y = Math.random() * canvas.height;
+                  this.vx = (Math.random() - 0.5) * 0.5;
+                  this.vy = (Math.random() - 0.5) * 0.5;
+                  this.radius = Math.random() * 2 + 1;
+                }
+                update() {
+                  const width = canvas.width;
+                  const height = canvas.height;
+                  this.x += this.vx;
+                  this.y += this.vy;
+                  if (this.x < 0 || this.x > width) this.vx *= -1;
+                  if (this.y < 0 || this.y > height) this.vy *= -1;
+                }
+                draw() {
+                  const ctx = canvas.getContext('2d');
+                  ctx.beginPath();
+                  ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                  ctx.fillStyle = 'rgba(0, 217, 255, 0.8)';
+                  ctx.fill();
+                }
+              }
+              particlesRef.current = [new Particle()];
+            }
+          }
+          // Re-enable scroll
+          document.body.style.overflow = 'auto';
+        }, 5000);
       }
     };
 
