@@ -126,8 +126,45 @@ const ParticleNetwork = () => {
       };
     };
 
+    // Handle click to add particles only in hero section
+    const handleClick = (e) => {
+      // Get hero section element
+      const heroSection = document.querySelector('section.min-h-screen');
+      
+      if (heroSection) {
+        const rect = heroSection.getBoundingClientRect();
+        const clickX = e.clientX;
+        const clickY = e.clientY;
+        
+        // Check if click is within hero section bounds
+        const isInHeroSection = 
+          clickX >= rect.left && 
+          clickX <= rect.right && 
+          clickY >= rect.top && 
+          clickY <= rect.bottom;
+        
+        if (isInHeroSection) {
+          // Prevent text selection when clicking in hero section
+          e.preventDefault();
+          
+          // Add 3-5 new particles around the click position
+          const numParticles = Math.floor(Math.random() * 3) + 3;
+          for (let i = 0; i < numParticles; i++) {
+            const particle = new Particle();
+            // Position particles around the click with some randomness
+            const offsetX = (Math.random() - 0.5) * 50;
+            const offsetY = (Math.random() - 0.5) * 50;
+            particle.x = e.clientX + offsetX;
+            particle.y = e.clientY + window.scrollY + offsetY;
+            particlesRef.current.push(particle);
+          }
+        }
+      }
+    };
+
     window.addEventListener('resize', handleResize);
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('click', handleClick);
 
     return () => {
       window.removeEventListener('resize', handleResize);
