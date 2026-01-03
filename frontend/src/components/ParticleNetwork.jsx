@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const ParticleNetwork = () => {
   const canvasRef = useRef(null);
@@ -6,6 +6,8 @@ const ParticleNetwork = () => {
   const particlesRef = useRef([]);
   const animationRef = useRef(null);
   const heroSectionRef = useRef(null);
+  const [blackHoleActive, setBlackHoleActive] = useState(false);
+  const blackHoleRef = useRef({ x: 0, y: 0, radius: 0, maxRadius: 150 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -45,8 +47,8 @@ const ParticleNetwork = () => {
       }
     }
 
-    // Initialize particles - increased density
-    const particleCount = Math.floor((width * height) / 6000);
+    // Initialize particles - increased density with max limit
+    const particleCount = Math.min(Math.floor((width * height) / 6000), 150);
     for (let i = 0; i < particleCount; i++) {
       particlesRef.current.push(new Particle());
     }
@@ -55,45 +57,133 @@ const ParticleNetwork = () => {
     const animate = () => {
       ctx.clearRect(0, 0, width, height);
 
+      // Black hole effect
+      if (blackHoleActive) {
+        // Draw black hole visual effect
+        const bh = blackHoleRef.current;
+        
+        // Outer glow
+        const outerGradient = ctx.createRadialGradient(bh.x, bh.y, 0, bh.x, bh.y, bh.radius * 1.5);
+        outerGradient.addColorStop(0, 'rgba(138, 43, 226, 0.3)');
+        outerGradient.addColorStop(0.5, 'rgba(75, 0, 130, 0.2)');
+        outerGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.beginPath();
+        ctx.arc(bh.x, bh.y, bh.radius * 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = outerGradient;
+        ctx.fill();
+
+        // Event horizon with distortion effect
+        const gradient = ctx.createRadialGradient(bh.x, bh.y, 0, bh.x, bh.y, bh.radius);
+        gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
+        gradient.addColorStop(0.7, 'rgba(25, 0, 51, 0.9)');
+        gradient.addColorStop(0.85, 'rgba(138, 43, 226, 0.6)');
+        gradient.addColorStop(1, 'rgba(0, 217, 255, 0.3)');
+        
+        ctx.beginPath();
+        ctx.arc(bh.x, bh.y, bh.radius, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        // Accretion disk rings
+        for (let i = 0; i < 3; i++) {
+          ctx.beginPath();
+          ctx.arc(bh.x, bh.y, bh.radius + (i * 15), 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(138, 43, 226, ${0.3 - i * 0.1})`;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+
+        // Grow black hole
+        if (bh.radius < bh.maxRadius) {
+          bh.radius += 2;
+        }
+      }
+
       // Update and draw particles
-      particlesRef.current.forEach((particle) => {
+      const particlesToRemove = [];
+      particlesRef.current.forEach((particle, index) => {
+        // Black hole gravitational effect
+        if (blackHoleActive) {
+          const bh = blackHoleRef.current;
+          const dx = bh.x - particle.x;
+          const dy = bh.y - particle.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          // Gravitational force (stronger as it gets closer)
+          if (distance > 5) {
+            const force = (bh.radius * 0.5) / (distance * distance) * 1000;
+            const angle = Math.atan2(dy, dx);
+            particle.vx += Math.cos(angle) * force;
+            particle.vy += Math.sin(angle) * force;
+          }
+          
+          // Remove particle if it reaches the black hole center
+          if (distance < 20) {
+            particlesToRemove.push(index);
+            return;
+          }
+        }
+        
         particle.update();
         particle.draw();
       });
 
-      // Draw connections between particles
+      // Remove absorbed particles
+      if (particlesToRemove.length > 0) {
+        particlesRef.current = particlesRef.current.filter((_, index) => !particlesToRemove.includes(index));
+      }
+
+      // Draw connections between particles (optimized - limit checks)
+      const maxConnectionDistance = 120;
+      const maxConnectionsPerParticle = 5;
+      
       for (let i = 0; i < particlesRef.current.length; i++) {
-        for (let j = i + 1; j < particlesRef.current.length; j++) {
+        let connections = 0;
+        for (let j = i + 1; j < particlesRef.current.length && connections < maxConnectionsPerParticle; j++) {
           const dx = particlesRef.current[i].x - particlesRef.current[j].x;
           const dy = particlesRef.current[i].y - particlesRef.current[j].y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+          const distanceSquared = dx * dx + dy * dy;
+          const maxDistSquared = maxConnectionDistance * maxConnectionDistance;
 
-          if (distance < 120) {
+          if (distanceSquared < maxDistSquared) {
+            const distance = Math.sqrt(distanceSquared);
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(0, 217, 255, ${1 - distance / 120})`;
+            ctx.strokeStyle = `rgba(0, 217, 255, ${1 - distance / maxConnectionDistance})`;
             ctx.lineWidth = 0.5;
             ctx.moveTo(particlesRef.current[i].x, particlesRef.current[i].y);
             ctx.lineTo(particlesRef.current[j].x, particlesRef.current[j].y);
             ctx.stroke();
+            connections++;
           }
         }
       }
 
-      // Draw lines from cursor to nearby particles
-      particlesRef.current.forEach((particle) => {
-        const dx = mouseRef.current.x - particle.x;
-        const dy = mouseRef.current.y - particle.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+      // Draw lines from cursor to nearby particles (only if not black hole active)
+      if (!blackHoleActive) {
+        particlesRef.current.forEach((particle) => {
+          const dx = mouseRef.current.x - particle.x;
+          const dy = mouseRef.current.y - particle.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < 150) {
-          ctx.beginPath();
-          ctx.strokeStyle = `rgba(0, 217, 255, ${1 - distance / 150})`;
-          ctx.lineWidth = 1.5;
-          ctx.moveTo(particle.x, particle.y);
-          ctx.lineTo(mouseRef.current.x, mouseRef.current.y);
-          ctx.stroke();
-        }
-      });
+          if (distance < 150) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(0, 217, 255, ${1 - distance / 150})`;
+            ctx.lineWidth = 1.5;
+            ctx.moveTo(particle.x, particle.y);
+            ctx.lineTo(mouseRef.current.x, mouseRef.current.y);
+            ctx.stroke();
+          }
+        });
+      }
+
+      // Auto-close black hole when few particles remain or after timeout
+      if (blackHoleActive && (particlesRef.current.length < 10 || blackHoleRef.current.radius >= blackHoleRef.current.maxRadius + 50)) {
+        setTimeout(() => {
+          setBlackHoleActive(false);
+          // Re-enable scroll
+          document.body.style.overflow = 'auto';
+        }, 1000);
+      }
 
       animationRef.current = requestAnimationFrame(animate);
     };
@@ -107,8 +197,8 @@ const ParticleNetwork = () => {
       canvas.width = width;
       canvas.height = height;
 
-      // Recalculate particle count - increased density
-      const newCount = Math.floor((width * height) / 6000);
+      // Recalculate particle count - increased density with max limit
+      const newCount = Math.min(Math.floor((width * height) / 6000), 150);
       if (newCount > particlesRef.current.length) {
         for (let i = particlesRef.current.length; i < newCount; i++) {
           particlesRef.current.push(new Particle());
@@ -143,20 +233,23 @@ const ParticleNetwork = () => {
           clickY >= rect.top && 
           clickY <= rect.bottom;
         
-        if (isInHeroSection) {
+        if (isInHeroSection && !blackHoleActive) {
           // Prevent text selection when clicking in hero section
           e.preventDefault();
           
-          // Add 3-5 new particles around the click position
-          const numParticles = Math.floor(Math.random() * 3) + 3;
-          for (let i = 0; i < numParticles; i++) {
-            const particle = new Particle();
-            // Position particles around the click with some randomness
-            const offsetX = (Math.random() - 0.5) * 50;
-            const offsetY = (Math.random() - 0.5) * 50;
-            particle.x = e.clientX + offsetX;
-            particle.y = e.clientY + window.scrollY + offsetY;
-            particlesRef.current.push(particle);
+          // Cap total particles at 200 for performance
+          if (particlesRef.current.length < 200) {
+            // Add 3-5 new particles around the click position
+            const numParticles = Math.floor(Math.random() * 3) + 3;
+            for (let i = 0; i < numParticles; i++) {
+              const particle = new Particle();
+              // Position particles around the click with some randomness
+              const offsetX = (Math.random() - 0.5) * 50;
+              const offsetY = (Math.random() - 0.5) * 50;
+              particle.x = e.clientX + offsetX;
+              particle.y = e.clientY + window.scrollY + offsetY;
+              particlesRef.current.push(particle);
+            }
           }
         }
       }
@@ -173,6 +266,29 @@ const ParticleNetwork = () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
+    };
+  }, [blackHoleActive]);
+
+  // Expose black hole activation function to window for Hero component
+  useEffect(() => {
+    window.activateBlackHole = () => {
+      const heroSection = document.querySelector('section.min-h-screen');
+      if (heroSection) {
+        const rect = heroSection.getBoundingClientRect();
+        blackHoleRef.current = {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+          radius: 0,
+          maxRadius: 150
+        };
+        setBlackHoleActive(true);
+        // Disable scroll during black hole
+        document.body.style.overflow = 'hidden';
+      }
+    };
+
+    return () => {
+      delete window.activateBlackHole;
     };
   }, []);
 
