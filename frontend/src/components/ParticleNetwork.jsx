@@ -5,6 +5,7 @@ const ParticleNetwork = () => {
   const mouseRef = useRef({ x: 0, y: 0 });
   const particlesRef = useRef([]);
   const animationRef = useRef(null);
+  const heroSectionRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
