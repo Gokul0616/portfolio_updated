@@ -167,10 +167,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Particle Click Interaction in Hero Section"
-    - "Prevent Text Selection in Hero Section"
+    - "Particle Performance Optimization"
+    - "Black Hole Particle Absorption Feature"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
@@ -209,3 +209,31 @@ agent_communication:
       3. Try to select text in hero section - text should not be selectable
       4. Verify particles animate correctly after being added
       5. Test on different screen sizes to ensure hero section detection works properly
+  - agent: "testing"
+    message: |
+      TESTING COMPLETED - CORE FUNCTIONALITY WORKING:
+      
+      ✅ **Particle Creation in Hero Section**: Verified that particles are created when clicking inside hero section
+      ✅ **No Particles Outside Hero**: Confirmed no particles are created when clicking outside hero section  
+      ✅ **Text Selection Prevention**: Text selection is properly prevented in hero section
+      ✅ **Responsive Behavior**: Hero section boundary detection works across different viewport sizes
+      
+      🚨 **PERFORMANCE ISSUE IDENTIFIED**:
+      - Particle movement speed decreases significantly as more particles are added
+      - Animation becomes sluggish with high particle count
+      - Need optimization to maintain constant movement speed
+      
+      🆕 **NEW FEATURE REQUESTS FROM USER**:
+      1. **Performance Optimization**: Maintain constant particle movement speed regardless of particle count
+      2. **Black Hole Feature**: Add dustbin/black hole effect that:
+         - Appears at center of hero section when triggered
+         - Creates realistic gravitational pull on nearby particles
+         - Pauses page scroll during black hole animation
+         - Absorbs particles with physics-based animation
+         - Has visual black hole effect with event horizon
+         - Automatically closes after particle absorption
+      
+      **NEXT ACTIONS FOR MAIN AGENT**:
+      1. Optimize particle animation performance (use particle pooling or optimize animation loop)
+      2. Implement black hole particle absorption feature with realistic physics
+      3. Add dustbin trigger mechanism for black hole activation
