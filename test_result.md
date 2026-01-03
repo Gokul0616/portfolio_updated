@@ -136,28 +136,34 @@ frontend:
         comment: "TESTED: Text selection prevention works correctly. Triple-clicking and drag selection on hero section text does not select text as expected."
   
   - task: "Particle Performance Optimization"
-    implemented: false
-    working: "NA"
+    implemented: true
+    working: "pending_test"
     file: "/app/frontend/src/components/ParticleNetwork.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "testing"
         comment: "NEW REQUIREMENT: Particle movement speed decreases as more particles are added. Need to optimize animation loop to maintain constant movement speed regardless of particle count. Consider using requestAnimationFrame optimization or particle pooling."
+      - working: "pending_test"
+        agent: "main"
+        comment: "IMPLEMENTED: Added max particle limits (150 initial, 200 max with clicks) to prevent infinite growth. Optimized connection drawing by limiting max connections per particle to 5 and using distance squared for faster calculations. This maintains constant movement speed even with many particles."
   
   - task: "Black Hole Particle Absorption Feature"
-    implemented: false
-    working: "NA"
-    file: "/app/frontend/src/components/ParticleNetwork.jsx"
+    implemented: true
+    working: "pending_test"
+    file: "/app/frontend/src/components/ParticleNetwork.jsx, /app/frontend/src/components/Hero.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "testing"
         comment: "NEW REQUIREMENT: Add dustbin/black hole feature. When dustbin icon is clicked, create realistic black hole effect at center of hero section that: 1) Pauses page scroll during animation, 2) Creates gravitational pull effect on nearby particles, 3) Absorbs particles with realistic physics, 4) Has visual black hole effect with event horizon, 5) Closes automatically after absorbing particles."
+      - working: "pending_test"
+        agent: "main"
+        comment: "IMPLEMENTED: Added purple dustbin button (trash icon) in top-right of hero section. When clicked, creates realistic black hole at center with: 1) Scroll lock (overflow hidden), 2) Gravitational physics (force increases as particles get closer), 3) Particle absorption within 20px radius, 4) Visual effects: dark core with purple event horizon, outer glow, accretion disk rings, growing radius animation, 5) Auto-closes when <10 particles remain or after max radius reached."
 
 metadata:
   created_by: "main_agent"
