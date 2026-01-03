@@ -243,3 +243,56 @@ agent_communication:
       1. Optimize particle animation performance (use particle pooling or optimize animation loop)
       2. Implement black hole particle absorption feature with realistic physics
       3. Add dustbin trigger mechanism for black hole activation
+  - agent: "main"
+    message: |
+      PERFORMANCE OPTIMIZATION & BLACK HOLE FEATURE IMPLEMENTED:
+      
+      **1. PERFORMANCE OPTIMIZATION - CONSTANT MOVEMENT SPEED:**
+      
+      Changes Made:
+      - Added max particle limit: 150 initial particles, capped at 200 with user clicks
+      - Optimized connection drawing:
+        * Limited to 5 connections per particle (instead of all particles)
+        * Used distance squared for preliminary checks (faster than sqrt)
+        * Skip connection checks once particle reaches max connections
+      - These optimizations maintain constant frame rate and movement speed
+      
+      **2. BLACK HOLE PARTICLE ABSORPTION FEATURE:**
+      
+      Visual Effects:
+      - Dark core (pure black center)
+      - Purple event horizon gradient (rgba purple/indigo blend)
+      - Outer glow effect with fade-out
+      - 3 accretion disk rings with decreasing opacity
+      - Growing radius animation from 0 to 150px
+      
+      Physics Implementation:
+      - Gravitational force: force = (radius * 0.5) / (distance²) * 1000
+      - Force increases exponentially as particles approach center
+      - Particles accelerate toward black hole (velocity increases)
+      - Absorption at 20px radius from center
+      
+      User Experience:
+      - Purple dustbin button in top-right of hero section (Trash2 icon)
+      - Button has hover effects: scale up, rotate icon, show label
+      - Scroll locked during black hole (body overflow: hidden)
+      - Auto-closes when <10 particles remain OR max radius exceeded
+      - Scroll restored after black hole closes
+      - Black hole appears at exact center of hero section
+      
+      Implementation Details:
+      - Used React useState for blackHoleActive state
+      - Black hole position calculated from hero section getBoundingClientRect
+      - Window.activateBlackHole exposed for communication between components
+      - Cursor lines disabled during black hole for cleaner visual
+      - Particles cannot be added by clicking during black hole
+      
+      TESTING NEEDED:
+      1. Verify constant movement speed with 50, 100, 150, 200 particles
+      2. Click dustbin button and verify black hole appears at center
+      3. Verify scroll is locked during black hole
+      4. Verify particles are pulled toward black hole with acceleration
+      5. Verify particles disappear when reaching center
+      6. Verify black hole closes automatically when done
+      7. Verify scroll is restored after black hole closes
+      8. Test visual effects: glow, event horizon, accretion rings
