@@ -101,3 +101,81 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Fix particle generation in hero section - particles should only be created when clicking inside the hero section, not outside. Prevent text selection when interacting with particles."
+
+frontend:
+  - task: "Particle Click Interaction in Hero Section"
+    implemented: true
+    working: "pending_test"
+    file: "/app/frontend/src/components/ParticleNetwork.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "pending_test"
+        agent: "main"
+        comment: "Added click event handler to create particles only when clicking within hero section boundaries. Particles are prevented from being added outside hero section. Added 3-5 particles per click with randomized positioning around click point."
+  
+  - task: "Prevent Text Selection in Hero Section"
+    implemented: true
+    working: "pending_test"
+    file: "/app/frontend/src/components/Hero.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "pending_test"
+        agent: "main"
+        comment: "Added 'select-none' CSS class to hero section to prevent text selection when clicking/interacting with particles. This prevents the text highlighting issue shown in the screenshots."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: true
+
+test_plan:
+  current_focus:
+    - "Particle Click Interaction in Hero Section"
+    - "Prevent Text Selection in Hero Section"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: |
+      IMPLEMENTATION COMPLETED:
+      
+      Fixed the particle generation issues as requested:
+      
+      1. **Click-to-Add Particles (Hero Section Only)**:
+         - Added a click event listener that detects if the click occurred within the hero section boundaries
+         - When clicking inside the hero section, 3-5 new particles are created around the click position
+         - Particles have randomized offset (±25px) from click point for natural distribution
+         - Clicks outside the hero section are ignored and do not create particles
+      
+      2. **Prevent Text Selection**:
+         - Added 'select-none' Tailwind class to the hero section to prevent text selection
+         - Added e.preventDefault() in the click handler when clicking inside hero section
+         - This fixes the issue where text like "Web & Mobile App Developer" was being selected
+      
+      TECHNICAL CHANGES:
+      - Modified ParticleNetwork.jsx:
+        * Added heroSectionRef for reference tracking
+        * Created handleClick function with hero section boundary detection
+        * Uses document.querySelector('section.min-h-screen') to find hero section
+        * Calculates click position relative to hero section bounds
+        * Dynamically creates Particle instances at click location
+      
+      - Modified Hero.jsx:
+        * Added 'select-none' class to prevent text selection
+      
+      TESTING NEEDED:
+      Please test the following scenarios:
+      1. Click anywhere inside the hero section - particles should appear at click location
+      2. Click outside the hero section (e.g., on About, Skills sections) - no particles should be added
+      3. Try to select text in hero section - text should not be selectable
+      4. Verify particles animate correctly after being added
+      5. Test on different screen sizes to ensure hero section detection works properly
