@@ -164,6 +164,9 @@ frontend:
       - working: "pending_test"
         agent: "main"
         comment: "IMPLEMENTED: Added purple dustbin button (trash icon) in top-right of hero section. When clicked, creates realistic black hole at center with: 1) Scroll lock (overflow hidden), 2) Gravitational physics (force increases as particles get closer), 3) Particle absorption within 20px radius, 4) Visual effects: dark core with purple event horizon, outer glow, accretion disk rings, growing radius animation, 5) Auto-closes when <10 particles remain or after max radius reached."
+      - working: "pending_test"
+        agent: "main"
+        comment: "UPDATED: Enhanced black hole to absorb ALL particles. Changes: 1) Increased gravitational force 4x to affect entire screen (force = maxRadius*2 / distance² * 2000), 2) Increased particle max speed to 15 during black hole for faster absorption, 3) Exact 5-second timer before black hole closes, 4) Leaves only 1 particle remaining after black hole (creates new one if all absorbed), 5) Increased absorption radius to 30px. Black hole now removes all particles in 5 seconds and disappears."
 
 metadata:
   created_by: "main_agent"
