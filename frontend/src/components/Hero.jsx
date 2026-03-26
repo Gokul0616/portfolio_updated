@@ -20,7 +20,7 @@ const Hero = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center px-4 py-16 select-none">
       {/* Black Hole Trigger Button */}
-      <button
+      {/* <button
         onClick={activateBlackHole}
         className="absolute top-20 right-8 z-20 bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110 group"
         title="Activate Black Hole"
@@ -29,7 +29,7 @@ const Hero = () => {
         <span className="absolute -bottom-8 right-0 text-xs text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
           Black Hole
         </span>
-      </button>
+      </button> */}
       
       <div className="relative z-10 max-w-5xl mx-auto text-center">
         <div className="mb-6 inline-block">
