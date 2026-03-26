@@ -7,7 +7,7 @@ export const personalInfo = {
   bio: "Motivated software developer with 8 months of experience, skilled in problem-solving and coding. Passionate about learning new technologies and collaborating in team environments. Interested in entrepreneurship and exploring opportunities to start and grow innovative businesses.",
   email: "gokul363info@gmail.com",
   phone: "+91 9443914436",
-  linkedin: "linkedin.com/in/gokul-becse/",
+  linkedin: "linkedin.com/in/gokul--r/",
   github: "github.com/Gokul0616",
   location: "Tamil Nadu, India"
 };
